@@ -20,7 +20,7 @@ export interface ConvertResponse {
 
 @Injectable({ providedIn: 'root' })
 export class CurrencyService {
-  private readonly baseUrl = 'http://localhost:3000/currency';
+  private readonly baseUrl = 'https://currency-converter-api-gahx.onrender.com/currency';
 
   constructor(private http: HttpClient) {}
 
