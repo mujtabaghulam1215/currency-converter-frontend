@@ -1,0 +1,164 @@
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.toolbar-title {
+  font-weight: 500;
+}
+
+.page {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: #121212;
+  min-height: calc(100vh - 64px);
+}
+
+.converter-card,
+.history-card {
+  width: 100%;
+  border-radius: 12px;
+}
+
+.converter-card mat-card-header,
+.history-card .history-header {
+  padding-bottom: 8px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.field-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.field {
+  flex: 1 1 0;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.swap-btn {
+  align-self: center;
+  margin-top: 10px;
+}
+
+.hint-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.04);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.loader {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.result-card {
+  margin-top: 16px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.result-main {
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.result-value {
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.result-sub {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 2px 0;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.history-title {
+  margin: 0;
+}
+
+.history-subtitle {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.history-table {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.history-main {
+  font-size: 13px;
+}
+
+.sub {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 0;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.7);
+
+  mat-icon {
+    font-size: 32px;
+    height: 32px;
+    width: 32px;
+  }
+}
+
+@media (min-width: 768px) {
+  .page {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .field-row {
+    flex-direction: row;
+  }
+
+  .swap-btn {
+    margin-top: 24px;
+  }
+}

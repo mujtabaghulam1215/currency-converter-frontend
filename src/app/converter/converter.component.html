@@ -1,0 +1,195 @@
+<mat-toolbar color="primary" class="toolbar">
+  <span class="toolbar-title">Currency Converter</span>
+</mat-toolbar>
+
+<div class="page">
+  <mat-card class="converter-card mat-elevation-z4">
+    <mat-card-header>
+      <mat-card-title>Convert currencies</mat-card-title>
+      <mat-card-subtitle>
+        Use latest or historical exchange rates
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="submit()" class="form">
+        <div class="field-row">
+          <mat-form-field appearance="fill" class="field">
+            <mat-label>From currency</mat-label>
+            <mat-select formControlName="from">
+              <mat-option *ngFor="let c of currencies" [value]="c">
+                {{ c }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <button
+            mat-icon-button
+            type="button"
+            class="swap-btn"
+            (click)="form.patchValue({ from: f['to'].value, to: f['from'].value })"
+            [disabled]="!f['from'].value || !f['to'].value"
+            aria-label="Swap currencies"
+          >
+            <mat-icon>swap_horiz</mat-icon>
+          </button>
+
+          <mat-form-field appearance="fill" class="field">
+            <mat-label>To currency</mat-label>
+            <mat-select formControlName="to">
+              <mat-option *ngFor="let c of currencies" [value]="c">
+                {{ c }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Amount</mat-label>
+          <input matInput type="number" formControlName="amount" />
+          <mat-error *ngIf="f['amount'].hasError('required')">
+            Amount is required
+          </mat-error>
+          <mat-error *ngIf="f['amount'].hasError('min')">
+            Amount must be greater than 0
+          </mat-error>
+        </mat-form-field>
+
+        <div class="field-row">
+          <mat-form-field appearance="fill" class="field">
+            <mat-label>Historical date (optional)</mat-label>
+            <input
+              matInput
+              [matDatepicker]="picker"
+              formControlName="date"
+              [max]="maxDate"
+              placeholder="Latest rate if empty"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+
+          <div class="hint-card field">
+            <mat-icon color="primary">info</mat-icon>
+            <span>
+              Leave the date empty to use the latest available rate.
+            </span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="converting || form.invalid"
+          >
+            Convert
+          </button>
+          <mat-progress-spinner
+            *ngIf="converting"
+            diameter="28"
+            strokeWidth="4"
+            mode="indeterminate"
+          ></mat-progress-spinner>
+        </div>
+      </form>
+
+      <div class="loader" *ngIf="loadingSymbols">
+        <mat-progress-spinner
+          diameter="40"
+          mode="indeterminate"
+        ></mat-progress-spinner>
+      </div>
+
+      <mat-card class="result-card" *ngIf="result && !converting">
+        <mat-card-title>Result</mat-card-title>
+        <mat-card-content>
+          <p class="result-main">
+            {{ result.amount }} {{ result.from }} =
+            <span class="result-value">
+              {{ result.convertedAmount | number: '1.2-4' }} {{ result.to }}
+            </span>
+          </p>
+          <p class="result-sub">
+            Rate:
+            {{ result.rate | number: '1.4-6' }}
+          </p>
+          <p class="result-sub" *ngIf="result.date">
+            Using historical rate on {{ result.date }}
+          </p>
+          <p class="result-sub" *ngIf="!result.date">
+            Using latest available rate
+          </p>
+        </mat-card-content>
+      </mat-card>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="history-card mat-elevation-z4">
+    <div class="history-header">
+      <div>
+        <h3 class="history-title">Conversion history</h3>
+        <p class="history-subtitle">
+          Saved locally and kept when you reload the page
+        </p>
+      </div>
+      <button
+        mat-stroked-button
+        color="warn"
+        (click)="clearHistory()"
+        [disabled]="!history.length"
+        aria-label="Clear history"
+      >
+        <mat-icon>delete</mat-icon>
+        Clear
+      </button>
+    </div>
+
+    <div *ngIf="!history.length" class="empty-state">
+      <mat-icon>history</mat-icon>
+      <p>No conversions yet. Try converting some currencies.</p>
+    </div>
+
+    <table
+      *ngIf="history.length"
+      mat-table
+      [dataSource]="history"
+      class="history-table"
+    >
+      <ng-container matColumnDef="info">
+        <th mat-header-cell *matHeaderCellDef>Conversion</th>
+        <td mat-cell *matCellDef="let item">
+          <div class="history-main">
+            {{ item.amount }} {{ item.from }} →
+            {{ item.convertedAmount | number: '1.2-4' }} {{ item.to }}
+          </div>
+          <div class="sub">
+            Rate: {{ item.rate | number: '1.4-6' }}
+          </div>
+          <div class="sub" *ngIf="item.dateUsed">
+            Historical date: {{ item.dateUsed }}
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef>Date / Time</th>
+        <td mat-cell *matCellDef="let item">
+          <div class="history-main">
+            {{ item.timestamp | date: 'medium' }}
+          </div>
+          <div class="sub" *ngIf="!item.dateUsed">
+            Latest rate
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="['info', 'date']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['info', 'date']"></tr>
+    </table>
+  </mat-card>
+</div>
